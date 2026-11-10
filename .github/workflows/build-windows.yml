@@ -1,0 +1,38 @@
+name: Build Windows EXE (unsigned)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          architecture: 'x64'
+
+      - name: Syntax check
+        run: python -m py_compile maimemo_controller_haptics.py
+
+      - name: Install PyInstaller
+        run: python -m pip install 'pyinstaller>=6,<7'
+
+      - name: Build unsigned Windows EXE
+        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name MaimemoHaptics maimemo_controller_haptics.py
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MaimemoHaptics-Windows-unsigned
+          path: dist/MaimemoHaptics.exe
+          if-no-files-found: error
