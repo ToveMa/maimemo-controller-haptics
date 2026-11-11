@@ -107,7 +107,6 @@ class App:
         self.root.minsize(500, 320)
         self.enabled = tk.BooleanVar(value=True)
         self.scope = tk.StringVar(value="墨墨标签页（窗口标题）")
-        self.power = tk.IntVar(value=100)
         self.duration = tk.IntVar(value=120)
         self.status = tk.StringVar(value="正在检测 Windows XInput 手柄...")
         self.foreground_status = tk.StringVar(value="前台窗口：待检测")
@@ -136,9 +135,7 @@ class App:
         row2 = ttk.Frame(outer)
         row2.pack(fill="x", pady=5)
         ttk.Label(row2, text="震动强度：").pack(side="left")
-        ttk.Scale(row2, from_=10, to=100, variable=self.power, orient="horizontal", length=210).pack(side="left", padx=4)
-        ttk.Label(row2, textvariable=self.power, width=4).pack(side="left")
-        ttk.Label(row2, text="% ").pack(side="left")
+        ttk.Label(row2, text="固定最大（100%，左右马达全开）").pack(side="left", padx=4)
         row3 = ttk.Frame(outer)
         row3.pack(fill="x", pady=5)
         ttk.Label(row3, text="震动时长：").pack(side="left")
@@ -184,7 +181,7 @@ class App:
     def start_pulse(self, now, milliseconds):
         if self.slot is None:
             return False
-        success = set_rumble(self.slot, self.power.get())
+        success = set_rumble(self.slot, 100)
         if success:
             self.rumble_end = now + milliseconds / 1000.0
         return success
